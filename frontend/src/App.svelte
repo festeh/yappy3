@@ -1,11 +1,16 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { GetTimeLeft, StartPomodoro, StopPomodoro } from '../wailsjs/go/main/App';
+	import { EventsOn } from '../wailsjs/runtime/runtime';
 
 	let remaining = 'waiting...';
 
 	onMount(async () => {
 		remaining = await GetTimeLeft();
+	});
+
+	EventsOn('tick', (newTimer) => {
+		remaining = newTimer;
 	});
 
 	async function handleStart() {
@@ -19,7 +24,7 @@
 
 <main class="h-screen w-full">
 	<div class="flex h-full flex-col items-center justify-center gap-8">
-		<div class="text-center text-6xl font-bold text-gray-800">
+		<div class="text-center text-6xl font-bold text-gray-300">
 			{remaining}
 		</div>
 		<div class="flex gap-4">
