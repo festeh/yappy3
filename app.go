@@ -24,7 +24,7 @@ func NewApp() *App {
 // so we can call the runtime methods
 func (a *App) startup(ctx context.Context) {
 	a.ctx = ctx
-	a.pomodoro.SetTickCallback(func(timeLeft float64) {
+	a.pomodoro.SetTickCallback(func(timeLeft string) {
 		runtime.EventsEmit(ctx, "tick", timeLeft)
 	})
 }
@@ -54,9 +54,9 @@ func (a *App) GetPomodoroState() PomodoroState {
 	return a.pomodoro.State
 }
 
-// GetTimeLeft returns the remaining time in seconds
-func (a *App) GetTimeLeft() float64 {
-	return a.pomodoro.TimeLeft.Seconds()
+// GetTimeLeft returns the remaining time in MM:SS format
+func (a *App) GetTimeLeft() string {
+	return formatTime(a.pomodoro.TimeLeft.Seconds())
 }
 
 // SetPomodoroTime sets a new duration for the pomodoro timer (in minutes)

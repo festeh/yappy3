@@ -1,9 +1,16 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"time"
 )
+
+func formatTime(seconds float64) string {
+	minutes := int(seconds) / 60
+	secs := int(seconds) % 60
+	return fmt.Sprintf("%02d:%02d", minutes, secs)
+}
 
 type ButtonInfo struct {
 	Text   string `json:"text"`
@@ -26,7 +33,7 @@ type Pomodoro struct {
 	StartTime    time.Time
 	timer        *time.Timer
 	ticker       *time.Ticker
-	tickCallback func(float64)
+	tickCallback func(string)
 }
 
 func NewPomodoro(duration time.Duration) *Pomodoro {
@@ -58,14 +65,14 @@ func (p *Pomodoro) Start() {
 					p.ticker = nil
 				}
 				if p.tickCallback != nil {
-					p.tickCallback(0)
+					p.tickCallback(formatTime(0))
 				}
 				return
 			case <-p.ticker.C:
 				p.TimeLeft = p.TimeLeft - time.Second
 				log.Println("tick")
 				if p.tickCallback != nil {
-					p.tickCallback(p.TimeLeft.Seconds())
+					p.tickCallback(formatTime(p.TimeLeft.Seconds()))
 				}
 			}
 		}
@@ -94,7 +101,7 @@ func (p *Pomodoro) Stop() {
 	p.State = StateIdle
 	p.TimeLeft = p.Duration
 	if p.tickCallback != nil {
-		p.tickCallback(p.Duration.Seconds())
+		p.tickCallback(formatTime(p.Duration.Seconds()))
 	}
 }
 
@@ -128,7 +135,7 @@ func (p *Pomodoro) Resume() {
 	p.Start()
 }
 
-func (p *Pomodoro) SetTickCallback(callback func(float64)) {
+func (p *Pomodoro) SetTickCallback(callback func(string)) {
 	p.tickCallback = callback
 }
 
