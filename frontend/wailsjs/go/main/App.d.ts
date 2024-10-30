@@ -6,7 +6,7 @@ export function GetPomodoroButtons():Promise<Array<main.ButtonInfo>>;
 
 export function GetPomodoroState():Promise<main.PomodoroState>;
 
-export function GetTimeLeft():Promise<number>;
+export function GetTimeLeft():Promise<string>;
 
 export function PausePomodoro():Promise<void>;
 
