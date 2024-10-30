@@ -3,6 +3,8 @@ package main
 import (
 	"context"
 	"time"
+
+	"github.com/wailsjs/runtime"
 )
 
 // App struct
@@ -22,6 +24,9 @@ func NewApp() *App {
 // so we can call the runtime methods
 func (a *App) startup(ctx context.Context) {
 	a.ctx = ctx
+	a.pomodoro.SetTickCallback(func(timeLeft float64) {
+		runtime.EventsEmit(ctx, "pomodoroTick", timeLeft)
+	})
 }
 
 // StartPomodoro starts the pomodoro timer
@@ -56,5 +61,9 @@ func (a *App) GetTimeLeft() float64 {
 
 // SetPomodoroTime sets a new duration for the pomodoro timer (in minutes)
 func (a *App) SetPomodoroTime(minutes float64) {
-	a.pomodoro = NewPomodoro(time.Duration(minutes * float64(time.Minute)))
+	newPomodoro := NewPomodoro(time.Duration(minutes * float64(time.Minute)))
+	newPomodoro.SetTickCallback(func(timeLeft float64) {
+		runtime.EventsEmit(a.ctx, "pomodoroTick", timeLeft)
+	})
+	a.pomodoro = newPomodoro
 }
