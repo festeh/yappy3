@@ -7,7 +7,7 @@
 
 <div class="flex h-screen w-full">
 	<!-- Side Navigation -->
-	<div class="flex w-16 flex-col gap-4 border-r border-gray-200 bg-white p-4">
+	<div class="flex w-16 flex-col gap-4 border-r border-gray-200 p-4">
 		<button
 			class="rounded-lg p-2 text-2xl transition-colors hover:bg-gray-100 {currentView === 'pomodoro' ? 'bg-gray-100' : ''}"
 			on:click={() => (currentView = 'pomodoro')}
