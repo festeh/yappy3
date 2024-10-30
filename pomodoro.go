@@ -74,7 +74,7 @@ func (p *Pomodoro) Start() {
 
 func (p *Pomodoro) Stop() {
 	log.Println("Stopping")
-	if p.State != StateRunning {
+	if p.State == StateIdle || p.State == StateFinished {
 		return
 	}
 
@@ -87,7 +87,7 @@ func (p *Pomodoro) Stop() {
 
 	if p.ticker != nil {
 		p.ticker.Stop()
-    log.Println("Stopped ticker")
+		log.Println("Stopped ticker")
 		p.ticker = nil
 	}
 
@@ -116,7 +116,7 @@ func (p *Pomodoro) Pause() {
 		p.ticker = nil
 	}
 
-	p.TimeLeft = p.TimeLeft - time.Since(p.StartTime)
+	// p.TimeLeft = p.TimeLeft - time.Since(p.StartTime)
 	p.State = StatePaused
 }
 
