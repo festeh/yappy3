@@ -9,14 +9,14 @@
 	<!-- Side Navigation -->
 	<div class="flex w-16 flex-col gap-4 border-r border-gray-200 p-4">
 		<button
-			class="rounded-lg p-2 text-2xl transition-colors"
+			class="flex items-center justify-center rounded-lg p-2 text-2xl transition-colors"
 			on:click={() => (currentView = 'pomodoro')}
 			title="Pomodoro Timer"
 		>
 			⏰
 		</button>
 		<button
-			class="rounded-lg p-2 text-2xl transition-colors"
+			class="flex items-center justify-center rounded-lg p-2 text-2xl transition-colors"
 			on:click={() => (currentView = 'focus')}
 			title="Focus Mode"
 		>
