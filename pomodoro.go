@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"time"
 )
@@ -59,7 +58,7 @@ func (p *Pomodoro) Start() {
 				return
 			case <-p.ticker.C:
 				p.TimeLeft = p.TimeLeft - time.Second
-        log.Println("tick")
+				log.Println("tick")
 				if p.tickCallback != nil {
 					p.tickCallback(p.TimeLeft.Seconds())
 				}
@@ -69,6 +68,33 @@ func (p *Pomodoro) Start() {
 }
 
 func (p *Pomodoro) Stop() {
+	log.Println("Stopping")
+	if p.State != StateRunning {
+		return
+	}
+
+	if !p.timer.Stop() {
+		select {
+		case <-p.timer.C:
+		default:
+		}
+	}
+
+	if p.ticker != nil {
+		p.ticker.Stop()
+    log.Println("Stopped ticker")
+		p.ticker = nil
+	}
+
+	p.State = StateIdle
+	p.TimeLeft = p.Duration
+	if p.tickCallback != nil {
+		p.tickCallback(p.Duration.Seconds())
+	}
+}
+
+func (p *Pomodoro) Pause() {
+	log.Println("Paused")
 	if p.State != StateRunning {
 		return
 	}
@@ -83,25 +109,6 @@ func (p *Pomodoro) Stop() {
 	if p.ticker != nil {
 		p.ticker.Stop()
 		p.ticker = nil
-	}
-
-	p.State = StateIdle
-	p.TimeLeft = p.Duration
-	if p.tickCallback != nil {
-		p.tickCallback(p.Duration.Seconds())
-	}
-}
-
-func (p *Pomodoro) Pause() {
-	if p.State != StateRunning {
-		return
-	}
-
-	if !p.timer.Stop() {
-		select {
-		case <-p.timer.C:
-		default:
-		}
 	}
 
 	p.TimeLeft = p.TimeLeft - time.Since(p.StartTime)
