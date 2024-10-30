@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { GetTimeLeft, StartPomodoro, StopPomodoro } from '../wailsjs/go/main/App';
+	import { GetTimeLeft, StartPomodoro, StopPomodoro, PausePomodoro } from '../wailsjs/go/main/App';
 	import { EventsOn } from '../wailsjs/runtime/runtime';
 
 	let remaining = 'waiting...';
@@ -20,6 +20,10 @@
 	async function handleStop() {
 		await StopPomodoro();
 	}
+
+	async function handlePause() {
+		await PausePomodoro();
+	}
 </script>
 
 <main class="h-screen w-full">
@@ -33,6 +37,12 @@
 				class="rounded-lg bg-green-500 px-6 py-3 font-semibold text-white transition-colors hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
 			>
 				Start
+			</button>
+			<button
+				on:click={handlePause}
+				class="rounded-lg bg-yellow-500 px-6 py-3 font-semibold text-white transition-colors hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2"
+			>
+				Pause
 			</button>
 			<button
 				on:click={handleStop}
