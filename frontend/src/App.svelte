@@ -1,12 +1,21 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { GetTimeLeft, StartPomodoro, StopPomodoro, PausePomodoro } from '../wailsjs/go/main/App';
+	import {
+		GetTimeLeft,
+		StartPomodoro,
+		StopPomodoro,
+		PausePomodoro,
+		GetPomodoroButtons
+	} from '../wailsjs/go/main/App';
 	import { EventsOn } from '../wailsjs/runtime/runtime';
 
 	let remaining = 'waiting...';
 
 	onMount(async () => {
 		remaining = await GetTimeLeft();
+
+		const buttonInfo = await GetPomodoroButtons();
+		console.log(buttonInfo);
 	});
 
 	EventsOn('tick', (newTimer) => {
