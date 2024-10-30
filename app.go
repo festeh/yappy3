@@ -64,3 +64,8 @@ func (a *App) SetPomodoroTime(minutes float64) {
 	newPomodoro := NewPomodoro(time.Duration(minutes * float64(time.Minute)))
 	a.pomodoro = newPomodoro
 }
+
+// GetPomodoroButtons returns the available buttons based on current state
+func (a *App) GetPomodoroButtons() []ButtonInfo {
+	return a.pomodoro.GetButtons()
+}

@@ -5,6 +5,11 @@ import (
 	"time"
 )
 
+type ButtonInfo struct {
+	Text   string `json:"text"`
+	Method string `json:"method"`
+}
+
 type PomodoroState string
 
 const (
@@ -125,4 +130,25 @@ func (p *Pomodoro) Resume() {
 
 func (p *Pomodoro) SetTickCallback(callback func(float64)) {
 	p.tickCallback = callback
+}
+
+func (p *Pomodoro) GetButtons() []ButtonInfo {
+	switch p.State {
+	case StateIdle:
+		return []ButtonInfo{{Text: "Start", Method: "StartPomodoro"}}
+	case StateRunning:
+		return []ButtonInfo{
+			{Text: "Pause", Method: "PausePomodoro"},
+			{Text: "Stop", Method: "StopPomodoro"},
+		}
+	case StatePaused:
+		return []ButtonInfo{
+			{Text: "Resume", Method: "ResumePomodoro"},
+			{Text: "Stop", Method: "StopPomodoro"},
+		}
+	case StateFinished:
+		return []ButtonInfo{{Text: "Start New", Method: "StartPomodoro"}}
+	default:
+		return []ButtonInfo{}
+	}
 }
