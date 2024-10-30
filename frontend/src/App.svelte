@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { GetTimeLeft } from '../wailsjs/go/main/App';
+	import { GetTimeLeft, StartPomodoro, StopPomodoro } from '../wailsjs/go/main/App';
 
 	let remaining = 'waiting...';
 
