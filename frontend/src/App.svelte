@@ -5,33 +5,39 @@
 		StartPomodoro,
 		StopPomodoro,
 		PausePomodoro,
+		ResumePomodoro,
 		GetPomodoroButtons
 	} from '../wailsjs/go/main/App';
 	import { EventsOn } from '../wailsjs/runtime/runtime';
+	import Button from './Button.svelte';
 
 	let remaining = 'waiting...';
+	let buttons: Array<{ text: string; method: string }> = [];
+
+	const updateButtons = async () => {
+		buttons = await GetPomodoroButtons();
+	};
 
 	onMount(async () => {
 		remaining = await GetTimeLeft();
-
-		const buttonInfo = await GetPomodoroButtons();
-		console.log(buttonInfo);
+		await updateButtons();
 	});
 
-	EventsOn('tick', (newTimer) => {
+	EventsOn('tick', async (newTimer) => {
 		remaining = newTimer;
+		await updateButtons();
 	});
 
-	async function handleStart() {
-		await StartPomodoro();
-	}
+	const methodMap = {
+		StartPomodoro,
+		StopPomodoro,
+		PausePomodoro,
+		ResumePomodoro
+	};
 
-	async function handleStop() {
-		await StopPomodoro();
-	}
-
-	async function handlePause() {
-		await PausePomodoro();
+	async function handleClick(method: string) {
+		await methodMap[method]();
+		await updateButtons();
 	}
 </script>
 
@@ -41,24 +47,13 @@
 			{remaining}
 		</div>
 		<div class="flex gap-4">
-			<button
-				on:click={handleStart}
-				class="rounded-lg bg-green-500 px-6 py-3 font-semibold text-white transition-colors hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
-			>
-				Start
-			</button>
-			<button
-				on:click={handlePause}
-				class="rounded-lg bg-yellow-500 px-6 py-3 font-semibold text-white transition-colors hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2"
-			>
-				Pause
-			</button>
-			<button
-				on:click={handleStop}
-				class="rounded-lg bg-red-500 px-6 py-3 font-semibold text-white transition-colors hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
-			>
-				Stop
-			</button>
+			{#each buttons as button}
+				<Button
+					text={button.text}
+					method={button.method}
+					onClick={() => handleClick(button.method)}
+				/>
+			{/each}
 		</div>
 	</div>
 </main>
