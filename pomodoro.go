@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+	"log"
 	"time"
 )
 
@@ -57,6 +59,7 @@ func (p *Pomodoro) Start() {
 				return
 			case <-p.ticker.C:
 				p.TimeLeft = p.TimeLeft - time.Second
+        log.Println("tick")
 				if p.tickCallback != nil {
 					p.tickCallback(p.TimeLeft.Seconds())
 				}
