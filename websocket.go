@@ -26,8 +26,8 @@ func NewWebSocketHandler(url string) *WebSocketHandler {
 	}
 }
 
-func (h *WebSocketHandler) Connect(w http.ResponseWriter, r *http.Request) {
-	conn, err := upgrader.Upgrade(w, r, nil)
+func (h *WebSocketHandler) Connect() (*websocket.Conn, error) {
+	conn, err := upgrader.Upgrade(nil, nil, nil)
 	if err != nil {
 		log.Printf("Failed to upgrade connection: %v", err)
 		return
