@@ -23,7 +23,7 @@ func NewWebSocketHandler(url string) *WebSocketHandler {
 			ReadBufferSize:  1024,
 			WriteBufferSize: 1024,
 			CheckOrigin: func(r *http.Request) bool {
-				return true // Allow all origins for development
+				return true 
 			},
 		},
 	}
