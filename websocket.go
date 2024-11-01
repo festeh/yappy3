@@ -8,26 +8,26 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-var upgrader = websocket.Upgrader{
-	ReadBufferSize:  1024,
-	WriteBufferSize: 1024,
-	CheckOrigin: func(r *http.Request) bool {
-		return true // Allow all origins for development
-	},
-}
-
 type WebSocketHandler struct {
-	URL string
+	URL      string
+	upgrader websocket.Upgrader
 }
 
 func NewWebSocketHandler(url string) *WebSocketHandler {
 	return &WebSocketHandler{
 		URL: url,
+		upgrader: websocket.Upgrader{
+			ReadBufferSize:  1024,
+			WriteBufferSize: 1024,
+			CheckOrigin: func(r *http.Request) bool {
+				return true // Allow all origins for development
+			},
+		},
 	}
 }
 
 func (h *WebSocketHandler) Connect() (*websocket.Conn, error) {
-	conn, err := upgrader.Upgrade(nil, nil, nil)
+	conn, err := h.upgrader.Upgrade(nil, nil, nil)
 	if err != nil {
 		log.Printf("Failed to upgrade connection: %v", err)
 		return
