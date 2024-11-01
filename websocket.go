@@ -14,9 +14,12 @@ type WebSocketHandler struct {
 	upgrader   websocket.Upgrader
 	conn       *websocket.Conn
 	isFocusing bool
+	w          http.ResponseWriter
+	r          *http.Request
+	headers    http.Header
 }
 
-func NewWebSocketHandler(url string) *WebSocketHandler {
+func NewWebSocketHandler(url string, w http.ResponseWriter, r *http.Request) *WebSocketHandler {
 	return &WebSocketHandler{
 		URL: url,
 		upgrader: websocket.Upgrader{
@@ -26,12 +29,15 @@ func NewWebSocketHandler(url string) *WebSocketHandler {
 				return true 
 			},
 		},
+		w:       w,
+		r:       r,
+		headers: make(http.Header),
 	}
 }
 
 func (h *WebSocketHandler) Connect() {
 	var err error
-	h.conn, err = h.upgrader.Upgrade(nil, nil, nil)
+	h.conn, err = h.upgrader.Upgrade(h.w, h.r, h.headers)
 	if err != nil {
 		log.Printf("Failed to upgrade connection: %v", err)
 		return
