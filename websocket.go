@@ -11,36 +11,25 @@ import (
 
 type WebSocketHandler struct {
 	URL        string
-	upgrader   websocket.Upgrader
 	conn       *websocket.Conn
 	isFocusing bool
-	w          http.ResponseWriter
-	r          *http.Request
 	headers    http.Header
 }
 
-func NewWebSocketHandler(url string, w http.ResponseWriter, r *http.Request) *WebSocketHandler {
+func NewWebSocketHandler(url string) *WebSocketHandler {
 	return &WebSocketHandler{
-		URL: url,
-		upgrader: websocket.Upgrader{
-			ReadBufferSize:  1024,
-			WriteBufferSize: 1024,
-			CheckOrigin: func(r *http.Request) bool {
-				return true 
-			},
-		},
-		w:       w,
-		r:       r,
+		URL:     url,
 		headers: make(http.Header),
 	}
 }
 
-func (h *WebSocketHandler) Connect() {
+func (h *WebSocketHandler) Connect() error {
+	dialer := websocket.Dialer{}
 	var err error
-	h.conn, err = h.upgrader.Upgrade(h.w, h.r, h.headers)
+	
+	h.conn, _, err = dialer.Dial(h.URL+"/connect", h.headers)
 	if err != nil {
-		log.Printf("Failed to upgrade connection: %v", err)
-		return
+		return fmt.Errorf("failed to connect to websocket: %v", err)
 	}
 
 	for {
