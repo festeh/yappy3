@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -9,9 +10,10 @@ import (
 )
 
 type WebSocketHandler struct {
-	URL      string
-	upgrader websocket.Upgrader
-	conn     *websocket.Conn
+	URL        string
+	upgrader   websocket.Upgrader
+	conn       *websocket.Conn
+	isFocusing bool
 }
 
 func NewWebSocketHandler(url string) *WebSocketHandler {
@@ -56,6 +58,24 @@ func (h *WebSocketHandler) Connect() {
 			return
 		}
 	}
+}
+
+func (h *WebSocketHandler) GetFocus() error {
+	resp, err := http.Get(h.URL + "/focus")
+	if err != nil {
+		return fmt.Errorf("failed to get focus status: %v", err)
+	}
+	defer resp.Body.Close()
+
+	var result struct {
+		Focusing bool `json:"focusing"`
+	}
+	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
+		return fmt.Errorf("failed to decode focus response: %v", err)
+	}
+
+	h.isFocusing = result.Focusing
+	return nil
 }
 
 func (h *WebSocketHandler) handleFocus() {
