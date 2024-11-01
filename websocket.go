@@ -11,6 +11,7 @@ import (
 type WebSocketHandler struct {
 	URL      string
 	upgrader websocket.Upgrader
+	conn     *websocket.Conn
 }
 
 func NewWebSocketHandler(url string) *WebSocketHandler {
@@ -26,16 +27,16 @@ func NewWebSocketHandler(url string) *WebSocketHandler {
 	}
 }
 
-func (h *WebSocketHandler) Connect() (*websocket.Conn, error) {
-	conn, err := h.upgrader.Upgrade(nil, nil, nil)
+func (h *WebSocketHandler) Connect() {
+	var err error
+	h.conn, err = h.upgrader.Upgrade(nil, nil, nil)
 	if err != nil {
 		log.Printf("Failed to upgrade connection: %v", err)
 		return
 	}
-	defer conn.Close()
 
 	for {
-		messageType, p, err := conn.ReadMessage()
+		messageType, p, err := h.conn.ReadMessage()
 		if err != nil {
 			log.Printf("Error reading message: %v", err)
 			return
@@ -44,24 +45,24 @@ func (h *WebSocketHandler) Connect() (*websocket.Conn, error) {
 		// Handle different message types
 		switch string(p) {
 		case "focus":
-			h.handleFocus(conn)
+			h.handleFocus()
 		default:
 			log.Printf("Unknown message: %s", string(p))
 		}
 
 		// Echo the message back
-		if err := conn.WriteMessage(messageType, p); err != nil {
+		if err := h.conn.WriteMessage(messageType, p); err != nil {
 			log.Printf("Error writing message: %v", err)
 			return
 		}
 	}
 }
 
-func (h *WebSocketHandler) handleFocus(conn *websocket.Conn) {
+func (h *WebSocketHandler) handleFocus() {
 	// Dummy implementation for focus event
 	log.Println("Focus event received")
 	msg := fmt.Sprintf("Focused on %s", h.URL)
-	if err := conn.WriteMessage(websocket.TextMessage, []byte(msg)); err != nil {
+	if err := h.conn.WriteMessage(websocket.TextMessage, []byte(msg)); err != nil {
 		log.Printf("Error sending focus response: %v", err)
 	}
 }
