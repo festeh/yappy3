@@ -39,12 +39,21 @@ func (h *WebSocketHandler) Connect() error {
 			return nil
 		}
 
-		// Handle different message types
-		switch string(p) {
+		// Parse JSON message
+		var msg struct {
+			Event string `json:"event"`
+		}
+		if err := json.Unmarshal(p, &msg); err != nil {
+			log.Printf("Error parsing message: %v", err)
+			continue
+		}
+
+		// Handle different event types
+		switch msg.Event {
 		case "focus":
 			h.handleFocus()
 		default:
-			log.Printf("Unknown message: %s", string(p))
+			log.Printf("Unknown event: %s", msg.Event)
 		}
 
 		// Echo the message back
