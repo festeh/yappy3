@@ -59,7 +59,7 @@ func (h *WebSocketHandler) Connect() error {
 		// Echo the message back
 		if err := h.conn.WriteMessage(messageType, p); err != nil {
 			log.Printf("Error writing message: %v", err)
-			return
+			return nil
 		}
 	}
 }
