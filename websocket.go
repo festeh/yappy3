@@ -12,8 +12,8 @@ import (
 type WebSocketHandler struct {
 	URL        string
 	conn       *websocket.Conn
-	isFocusing bool
 	headers    http.Header
+	isFocusing bool
 }
 
 func NewWebSocketHandler(url string) *WebSocketHandler {
@@ -26,7 +26,7 @@ func NewWebSocketHandler(url string) *WebSocketHandler {
 func (h *WebSocketHandler) Connect() error {
 	dialer := websocket.Dialer{}
 	var err error
-	
+
 	h.conn, _, err = dialer.Dial(h.URL+"/connect", h.headers)
 	if err != nil {
 		return fmt.Errorf("failed to connect to websocket: %v", err)
@@ -36,7 +36,7 @@ func (h *WebSocketHandler) Connect() error {
 		messageType, p, err := h.conn.ReadMessage()
 		if err != nil {
 			log.Printf("Error reading message: %v", err)
-			return
+			return nil
 		}
 
 		// Handle different message types
