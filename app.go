@@ -23,15 +23,21 @@ func NewApp() *App {
 		log.Printf("No .env file found, using defaults")
 	}
 
-	wsURL := os.Getenv("URL")
-	if wsURL == "" {
-		wsURL = "ws://localhost:8080" // fallback default
-		log.Printf("URL environment variable not set, using default: %s", wsURL)
+	wsurl := os.Getenv("COACH_WSURL")
+	if wsurl == "" {
+		wsurl = "ws://localhost:8080" // fallback default
+		log.Printf("WSURL environment variable not set, using default: %s", wsurl)
+	}
+
+	url := os.Getenv("COACH_URL")
+	if url == "" {
+		url = "http://localhost:8080" // fallback default
+		log.Printf("URL environment variable not set, using default: %s", url)
 	}
 
 	return &App{
 		pomodoro:  NewPomodoro(25 * time.Minute),
-		websocket: NewWebSocketHandler(wsURL),
+		websocket: NewWebSocketHandler(wsurl, url),
 	}
 }
 

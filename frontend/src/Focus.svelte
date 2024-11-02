@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onDestroy, onMount } from 'svelte';
 	import { Connect, Disconnect, GetFocus } from '../wailsjs/go/main/WebSocketHandler';
-	import { EventsOn } from 'wailsjs/runtime/runtime';
+	import { EventsOn } from '../wailsjs/runtime';
 
 	let focusing: boolean | null = null;
 
