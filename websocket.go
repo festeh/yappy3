@@ -15,6 +15,7 @@ type WebSocketHandler struct {
 	headers     http.Header
 	isFocusing  bool
 	OnFocusSet  func(bool)
+	done        chan struct{}
 }
 
 func (h *WebSocketHandler) setFocusing(focusing bool) {
@@ -28,6 +29,7 @@ func NewWebSocketHandler(url string) *WebSocketHandler {
 	return &WebSocketHandler{
 		URL:     url,
 		headers: make(http.Header),
+		done:    make(chan struct{}),
 	}
 }
 
@@ -40,36 +42,47 @@ func (h *WebSocketHandler) Connect() error {
 		return fmt.Errorf("failed to connect to websocket: %v", err)
 	}
 
-	for {
-		messageType, p, err := h.conn.ReadMessage()
-		if err != nil {
-			log.Printf("Error reading message: %v", err)
-			return nil
-		}
+	go func() {
+		defer h.conn.Close()
+		
+		for {
+			select {
+			case <-h.done:
+				return
+			default:
+				messageType, p, err := h.conn.ReadMessage()
+				if err != nil {
+					log.Printf("Error reading message: %v", err)
+					return
+				}
 
-		// Parse JSON message
-		var msg struct {
-			Event string `json:"event"`
-		}
-		if err := json.Unmarshal(p, &msg); err != nil {
-			log.Printf("Error parsing message: %v", err)
-			continue
-		}
+				// Parse JSON message
+				var msg struct {
+					Event string `json:"event"`
+				}
+				if err := json.Unmarshal(p, &msg); err != nil {
+					log.Printf("Error parsing message: %v", err)
+					continue
+				}
 
-		// Handle different event types
-		switch msg.Event {
-		case "focus":
-			h.handleFocus(p)
-		default:
-			log.Printf("Unknown event: %s", msg.Event)
-		}
+				// Handle different event types
+				switch msg.Event {
+				case "focus":
+					h.handleFocus(p)
+				default:
+					log.Printf("Unknown event: %s", msg.Event)
+				}
 
-		// Echo the message back
-		if err := h.conn.WriteMessage(messageType, p); err != nil {
-			log.Printf("Error writing message: %v", err)
-			return nil
+				// Echo the message back
+				if err := h.conn.WriteMessage(messageType, p); err != nil {
+					log.Printf("Error writing message: %v", err)
+					return
+				}
+			}
 		}
-	}
+	}()
+
+	return nil
 }
 
 func (h *WebSocketHandler) GetFocus() error {
@@ -88,6 +101,13 @@ func (h *WebSocketHandler) GetFocus() error {
 
 	h.setFocusing(result.Focusing)
 	return nil
+}
+
+func (h *WebSocketHandler) Disconnect() {
+	if h.conn != nil {
+		close(h.done)
+		h.conn.Close()
+	}
 }
 
 func (h *WebSocketHandler) handleFocus(message []byte) {
