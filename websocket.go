@@ -10,14 +10,18 @@ import (
 )
 
 type WebSocketHandler struct {
-	URL        string
-	conn       *websocket.Conn
-	headers    http.Header
-	isFocusing bool
+	URL         string
+	conn        *websocket.Conn
+	headers     http.Header
+	isFocusing  bool
+	OnFocusSet  func(bool)
 }
 
 func (h *WebSocketHandler) setFocusing(focusing bool) {
 	h.isFocusing = focusing
+	if h.OnFocusSet != nil {
+		h.OnFocusSet(focusing)
+	}
 }
 
 func NewWebSocketHandler(url string) *WebSocketHandler {
