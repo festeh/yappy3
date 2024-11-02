@@ -83,10 +83,16 @@ func (h *WebSocketHandler) GetFocus() error {
 }
 
 func (h *WebSocketHandler) handleFocus() {
-	// Dummy implementation for focus event
-	log.Println("Focus event received")
-	msg := fmt.Sprintf("Focused on %s", h.URL)
-	if err := h.conn.WriteMessage(websocket.TextMessage, []byte(msg)); err != nil {
-		log.Printf("Error sending focus response: %v", err)
+	// Parse the message to get focus state
+	var msg struct {
+		Event  string `json:"event"`
+		Focus  bool   `json:"focus"`
 	}
+	if err := json.NewDecoder(h.conn.UnderlyingConn()).Decode(&msg); err != nil {
+		log.Printf("Error parsing focus message: %v", err)
+		return
+	}
+
+	h.isFocusing = msg.Focus
+	log.Printf("Focus state updated: %v", h.isFocusing)
 }
