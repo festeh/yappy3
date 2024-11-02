@@ -2,6 +2,8 @@ package main
 
 import (
 	"context"
+	"log"
+	"os"
 	"time"
 
 	"github.com/wailsapp/wails/v2/pkg/runtime"
@@ -16,9 +18,15 @@ type App struct {
 
 // NewApp creates a new App application struct
 func NewApp() *App {
+	wsURL := os.Getenv("URL")
+	if wsURL == "" {
+		wsURL = "ws://localhost:8080" // fallback default
+		log.Printf("URL environment variable not set, using default: %s", wsURL)
+	}
+
 	return &App{
 		pomodoro:  NewPomodoro(25 * time.Minute),
-		websocket: NewWebSocketHandler("todo"),
+		websocket: NewWebSocketHandler(wsURL),
 	}
 }
 
