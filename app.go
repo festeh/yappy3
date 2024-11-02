@@ -6,6 +6,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/joho/godotenv"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
 
@@ -18,6 +19,10 @@ type App struct {
 
 // NewApp creates a new App application struct
 func NewApp() *App {
+	if err := godotenv.Load(); err != nil {
+		log.Printf("No .env file found, using defaults")
+	}
+
 	wsURL := os.Getenv("URL")
 	if wsURL == "" {
 		wsURL = "ws://localhost:8080" // fallback default
