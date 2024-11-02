@@ -9,14 +9,16 @@ import (
 
 // App struct
 type App struct {
-	ctx      context.Context
-	pomodoro *Pomodoro
+	ctx       context.Context
+	pomodoro  *Pomodoro
+	websocket *WebSocketHandler
 }
 
 // NewApp creates a new App application struct
 func NewApp() *App {
 	return &App{
-		pomodoro: NewPomodoro(25 * time.Minute),
+		pomodoro:  NewPomodoro(25 * time.Minute),
+		websocket: NewWebSocketHandler("todo"),
 	}
 }
 
@@ -27,6 +29,9 @@ func (a *App) startup(ctx context.Context) {
 	a.pomodoro.SetTickCallback(func(timeLeft string) {
 		runtime.EventsEmit(ctx, "tick", timeLeft)
 	})
+	a.websocket.OnFocusSet = func(focusing bool) {
+		runtime.EventsEmit(ctx, "focusing", focusing)
+	}
 }
 
 // StartPomodoro starts the pomodoro timer
