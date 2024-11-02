@@ -16,6 +16,10 @@ type WebSocketHandler struct {
 	isFocusing bool
 }
 
+func (h *WebSocketHandler) setFocusing(focusing bool) {
+	h.isFocusing = focusing
+}
+
 func NewWebSocketHandler(url string) *WebSocketHandler {
 	return &WebSocketHandler{
 		URL:     url,
@@ -78,7 +82,7 @@ func (h *WebSocketHandler) GetFocus() error {
 		return fmt.Errorf("failed to decode focus response: %v", err)
 	}
 
-	h.isFocusing = result.Focusing
+	h.setFocusing(result.Focusing)
 	return nil
 }
 
@@ -93,6 +97,6 @@ func (h *WebSocketHandler) handleFocus(message []byte) {
 		return
 	}
 
-	h.isFocusing = msg.Focus
+	h.setFocusing(msg.Focus)
 	log.Printf("Focus state updated: %v", h.isFocusing)
 }
