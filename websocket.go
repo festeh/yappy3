@@ -51,7 +51,7 @@ func (h *WebSocketHandler) Connect() error {
 		// Handle different event types
 		switch msg.Event {
 		case "focus":
-			h.handleFocus()
+			h.handleFocus(p)
 		default:
 			log.Printf("Unknown event: %s", msg.Event)
 		}
@@ -82,13 +82,13 @@ func (h *WebSocketHandler) GetFocus() error {
 	return nil
 }
 
-func (h *WebSocketHandler) handleFocus() {
+func (h *WebSocketHandler) handleFocus(message []byte) {
 	// Parse the message to get focus state
 	var msg struct {
-		Event  string `json:"event"`
-		Focus  bool   `json:"focus"`
+		Event string `json:"event"`
+		Focus bool   `json:"focus"`
 	}
-	if err := json.NewDecoder(h.conn.UnderlyingConn()).Decode(&msg); err != nil {
+	if err := json.Unmarshal(message, &msg); err != nil {
 		log.Printf("Error parsing focus message: %v", err)
 		return
 	}
