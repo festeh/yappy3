@@ -10,16 +10,16 @@ import (
 )
 
 type WebSocketHandler struct {
-	URL         string
-	conn        *websocket.Conn
-	headers     http.Header
-	isFocusing  bool
-	OnFocusSet  func(bool)
-	done        chan struct{}
+	URL        string
+	conn       *websocket.Conn
+	headers    http.Header
+	focusing   bool
+	OnFocusSet func(bool)
+	done       chan struct{}
 }
 
 func (h *WebSocketHandler) setFocusing(focusing bool) {
-	h.isFocusing = focusing
+	h.focusing = focusing
 	if h.OnFocusSet != nil {
 		h.OnFocusSet(focusing)
 	}
@@ -44,7 +44,7 @@ func (h *WebSocketHandler) Connect() error {
 
 	go func() {
 		defer h.conn.Close()
-		
+
 		for {
 			select {
 			case <-h.done:
@@ -122,5 +122,5 @@ func (h *WebSocketHandler) handleFocus(message []byte) {
 	}
 
 	h.setFocusing(msg.Focus)
-	log.Printf("Focus state updated: %v", h.isFocusing)
+	log.Printf("Focus state updated: %v", h.focusing)
 }
