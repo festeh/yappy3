@@ -106,6 +106,12 @@ func (h *WebSocketHandler) GetFocus() error {
 	return nil
 }
 
+func (h *WebSocketHandler) SetFocus() error {
+  body := struct {
+    Focusing bool `json:"focusing"`
+  }
+}
+
 func (h *WebSocketHandler) Disconnect() {
 	if h.conn != nil {
 		close(h.done)
