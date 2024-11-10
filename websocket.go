@@ -106,12 +106,6 @@ func (h *WebSocketHandler) GetFocus() error {
 	return nil
 }
 
-func (h *WebSocketHandler) SetFocus() error {
-  body := struct {
-    Focusing bool `json:"focusing"`
-  }
-}
-
 func (h *WebSocketHandler) Disconnect() {
 	if h.conn != nil {
 		close(h.done)
@@ -122,7 +116,7 @@ func (h *WebSocketHandler) Disconnect() {
 func (h *WebSocketHandler) handleFocus(message []byte) {
 	// Parse the message to get focus state
 	var msg struct {
-		Event string `json:"event"`
+		Event    string `json:"event"`
 		Focusing bool   `json:"focusing"`
 	}
 	if err := json.Unmarshal(message, &msg); err != nil {
