@@ -5,4 +5,6 @@ export function Connect():Promise<void>;
 
 export function Disconnect():Promise<void>;
 
+export function FocusNow():Promise<void>;
+
 export function GetFocus():Promise<void>;

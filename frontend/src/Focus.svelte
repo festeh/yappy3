@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onDestroy, onMount } from 'svelte';
-	import { Connect, Disconnect, GetFocus, Focus } from '../wailsjs/go/main/WebSocketHandler';
+	import { Connect, Disconnect, GetFocus, FocusNow } from '../wailsjs/go/main/WebSocketHandler';
 	import { EventsOn } from '../wailsjs/runtime';
 
 	let focusing: boolean | null = null;
@@ -32,9 +32,10 @@
 		<div class="text-center text-4xl font-bold text-gray-300">
 			Focus: {focusing}
 		</div>
-		<button 
-			on:click={Focus}
-			class="rounded-lg bg-gray-700 px-6 py-3 text-xl text-gray-300 hover:bg-gray-600">
+		<button
+			on:click={FocusNow}
+			class="rounded-lg bg-gray-700 px-6 py-3 text-xl text-gray-300 hover:bg-gray-600"
+		>
 			Focus Now
 		</button>
 	</div>

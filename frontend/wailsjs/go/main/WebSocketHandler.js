@@ -10,6 +10,10 @@ export function Disconnect() {
   return window['go']['main']['WebSocketHandler']['Disconnect']();
 }
 
+export function FocusNow() {
+  return window['go']['main']['WebSocketHandler']['FocusNow']();
+}
+
 export function GetFocus() {
   return window['go']['main']['WebSocketHandler']['GetFocus']();
 }

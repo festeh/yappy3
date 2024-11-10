@@ -121,11 +121,11 @@ func (h *WebSocketHandler) FocusNow() error {
 		return fmt.Errorf("failed to set focus: %v", err)
 	}
 	defer resp.Body.Close()
-	
+
 	if resp.StatusCode != http.StatusOK {
 		return fmt.Errorf("unexpected status code: %d", resp.StatusCode)
 	}
-	
+
 	return nil
 }
 
