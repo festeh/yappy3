@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strings"
 
 	"github.com/gorilla/websocket"
 )
@@ -111,6 +112,21 @@ func (h *WebSocketHandler) Disconnect() {
 		close(h.done)
 		h.conn.Close()
 	}
+}
+
+func (h *WebSocketHandler) FocusNow() error {
+	data := "focusing=true"
+	resp, err := http.Post(h.URL, "application/x-www-form-urlencoded", strings.NewReader(data))
+	if err != nil {
+		return fmt.Errorf("failed to set focus: %v", err)
+	}
+	defer resp.Body.Close()
+	
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("unexpected status code: %d", resp.StatusCode)
+	}
+	
+	return nil
 }
 
 func (h *WebSocketHandler) handleFocus(message []byte) {
