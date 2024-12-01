@@ -47,15 +47,13 @@ func (h *WebSocketHandler) Connect() error {
 			case <-h.done:
 				return
 			default:
-				messageType, p, err := h.conn.ReadMessage()
+				_, p, err := h.conn.ReadMessage()
 				if err != nil {
 					log.Printf("Error reading message: %v", err)
 					return
 				}
-
 				select {
 				case h.msgChan <- p:
-					// Message sent to channel
 				case <-h.done:
 					return
 				}
