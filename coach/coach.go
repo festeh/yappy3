@@ -7,10 +7,10 @@ import (
 )
 
 type Coach struct {
-	Focusing   bool
-	TimeSince  time.Duration
-	handler    *WebSocketHandler
-	onFocusSet func(focusing bool)
+	Focusing  bool
+	TimeSince time.Duration
+	handler   *WebSocketHandler
+	callbacks *Callbacks
 }
 
 func NewCoach(ws_url string, url string) *Coach {
@@ -18,6 +18,7 @@ func NewCoach(ws_url string, url string) *Coach {
 		Focusing:  false,
 		TimeSince: 0,
 		handler:   NewWebSocketHandler(ws_url, url),
+		callbacks: NewCallbacks(),
 	}
 
 	go func() {
@@ -28,6 +29,7 @@ func NewCoach(ws_url string, url string) *Coach {
 			select {
 			case <-ticker.C:
 				s.TimeSince += time.Minute
+				s.callbacks.RunOnTick(s)
 			case <-s.handler.done:
 				return
 			}
@@ -35,6 +37,18 @@ func NewCoach(ws_url string, url string) *Coach {
 	}()
 
 	return s
+}
+
+func (s *Coach) Connect() {
+	s.handler.Connect()
+}
+
+func (s *Coach) Disconnect() {
+	s.handler.Disconnect()
+}
+
+func (s *Coach) GetFocusing() bool {
+	return s.Focusing
 }
 
 func (s *Coach) Close() {
@@ -65,4 +79,3 @@ func (s *Coach) handleFocus(message []byte) {
 
 	s.SetFocusing(msg.Focusing)
 }
-

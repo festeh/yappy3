@@ -6,6 +6,18 @@ export function Close() {
   return window['go']['coach']['Coach']['Close']();
 }
 
+export function Connect() {
+  return window['go']['coach']['Coach']['Connect']();
+}
+
+export function Disconnect() {
+  return window['go']['coach']['Coach']['Disconnect']();
+}
+
+export function GetFocusing() {
+  return window['go']['coach']['Coach']['GetFocusing']();
+}
+
 export function SetFocusing(arg1) {
   return window['go']['coach']['Coach']['SetFocusing'](arg1);
 }

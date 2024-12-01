@@ -3,6 +3,12 @@
 
 export function Close():Promise<void>;
 
+export function Connect():Promise<void>;
+
+export function Disconnect():Promise<void>;
+
+export function GetFocusing():Promise<boolean>;
+
 export function SetFocusing(arg1:boolean):Promise<void>;
 
 export function SetOnFocusSet(arg1:any):Promise<void>;
