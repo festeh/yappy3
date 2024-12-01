@@ -51,6 +51,16 @@ func NotifyPomodoroStart(p *pomodoro.Pomo) {
 	cmd.Run()
 }
 
+func NotifyPomodoroStop(p *pomodoro.Pomo) {
+	cmd := exec.Command("notify-send", "Pomodoro", "Pomodoro has been stopped")
+	cmd.Run()
+}
+
+func NotifyPomodoroFinish(p *pomodoro.Pomo) {
+	cmd := exec.Command("notify-send", "Pomodoro", "Pomodoro finished!")
+	cmd.Run()
+}
+
 func StopResetTimeWrapper(ctx context.Context, p *pomodoro.Pomo) func(p *pomodoro.Pomo) {
 	return func(p *pomodoro.Pomo) {
 		duration := FormatTime(p.Duration.Seconds())

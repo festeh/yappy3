@@ -53,7 +53,9 @@ func (a *App) startup(ctx context.Context) {
 	cbs.AddTick(TickTimeLeftAstal)
 	
 	cbs.AddStart(NotifyPomodoroStart)
+	cbs.AddStop(NotifyPomodoroStop)
 	cbs.AddStop(StopResetTimeWrapper(ctx, a.pomo))
+	cbs.AddFinish(NotifyPomodoroFinish)
 
 	a.coach.SetOnFocusSet(func(focusing bool) {
 		runtime.EventsEmit(ctx, "focusing", focusing)
