@@ -48,9 +48,11 @@ func NewApp() *App {
 // so we can call the runtime methods
 func (a *App) startup(ctx context.Context) {
 	a.ctx = ctx
-  cbs := a.pomo.Callbacks
-	cbs.AddTick(TimeLeftOnTickWrapper(ctx, a.pomo))
-  cbs.AddStop(ResetTimeOnStopWrapper(ctx, a.pomo))
+	cbs := a.pomo.Callbacks
+	cbs.AddTick(TickTimeLeftWrapper(ctx, a.pomo))
+	cbs.AddTick(TickTimeLeftAstal)
+
+	cbs.AddStop(StopResetTimeWrapper(ctx, a.pomo))
 
 	a.coach.SetOnFocusSet(func(focusing bool) {
 		runtime.EventsEmit(ctx, "focusing", focusing)
