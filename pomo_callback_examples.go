@@ -28,7 +28,7 @@ func TickTimeLeftAstal(p *pomodoro.Pomo) {
 	astal := astal.Astal{}
 	seconds := p.TimeLeft.Seconds()
 	var timeLeft string
-	
+
 	if seconds >= 60 {
 		minutes := math.Round(seconds / 60)
 		suffix := "mins"
@@ -57,7 +57,7 @@ func NotifyPomodoroStop(p *pomodoro.Pomo) {
 }
 
 func NotifyPomodoroFinish(p *pomodoro.Pomo) {
-	cmd := exec.Command("notify-send", "Pomodoro", "Pomodoro finished!")
+	cmd := exec.Command("notify-send", "Pomodoro", "Pomodoro finished! Hooray!")
 	cmd.Run()
 }
 
