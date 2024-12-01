@@ -1,6 +1,10 @@
 package coach
 
-import "time"
+import (
+	"encoding/json"
+	"log"
+	"time"
+)
 
 type Coach struct {
 	Focusing   bool
@@ -11,9 +15,9 @@ type Coach struct {
 
 func NewCoach(ws_url string, url string) *Coach {
 	s := &Coach{
-		Focusing:   false,
-		TimeSince:  0,
-		handler:    NewWebSocketHandler(ws_url, url),
+		Focusing:  false,
+		TimeSince: 0,
+		handler:   NewWebSocketHandler(ws_url, url),
 	}
 
 	go func() {
@@ -38,11 +42,27 @@ func (s *Coach) Close() {
 }
 
 func (s *Coach) SetFocusing(focusing bool) {
+	log.Printf("Focus state updated: %v", s.Focusing)
 	s.Focusing = focusing
 	s.TimeSince = 0
 	s.onFocusSet(focusing)
 }
 
 func (s *Coach) SetOnFocusSet(f func(focusing bool)) {
-  s.onFocusSet = f
+	s.onFocusSet = f
 }
+
+func (s *Coach) handleFocus(message []byte) {
+	// Parse the message to get focus state
+	var msg struct {
+		Event    string `json:"event"`
+		Focusing bool   `json:"focusing"`
+	}
+	if err := json.Unmarshal(message, &msg); err != nil {
+		log.Printf("Error parsing focus message: %v", err)
+		return
+	}
+
+	s.SetFocusing(msg.Focusing)
+}
+

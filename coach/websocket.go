@@ -11,13 +11,12 @@ import (
 )
 
 type WebSocketHandler struct {
-	WS_URL     string
-	URL        string
-	conn       *websocket.Conn
-	headers    http.Header
-	done       chan struct{}
+	WS_URL  string
+	URL     string
+	conn    *websocket.Conn
+	headers http.Header
+	done    chan struct{}
 }
-
 
 func NewWebSocketHandler(wsurl string, url string) *WebSocketHandler {
 	return &WebSocketHandler{
@@ -64,7 +63,8 @@ func (h *WebSocketHandler) Connect() error {
 				// Handle different event types
 				switch msg.Event {
 				case "focusing":
-					h.handleFocus(p)
+          // TODO: broken!! fix
+					// h.handleFocus(p)
 				default:
 					log.Printf("Unknown event: %s", msg.Event)
 				}
@@ -81,10 +81,10 @@ func (h *WebSocketHandler) Connect() error {
 	return nil
 }
 
-func (h *WebSocketHandler) GetFocus() error {
+func (h *WebSocketHandler) GetFocus() (bool, error) {
 	resp, err := http.Get(h.URL)
 	if err != nil {
-		return fmt.Errorf("failed to get focus status: %v", err)
+		return false, fmt.Errorf("failed to get focus status: %v", err)
 	}
 	defer resp.Body.Close()
 
@@ -92,11 +92,10 @@ func (h *WebSocketHandler) GetFocus() error {
 		Focusing bool `json:"focusing"`
 	}
 	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
-		return fmt.Errorf("failed to decode focus response(%v): %v", resp.Body, err)
+		return false, fmt.Errorf("failed to decode focus response(%v): %v", resp.Body, err)
 	}
 
-	h.setFocusing(result.Focusing)
-	return nil
+	return result.Focusing, nil
 }
 
 func (h *WebSocketHandler) Disconnect() {
@@ -119,19 +118,4 @@ func (h *WebSocketHandler) FocusNow() error {
 	}
 
 	return nil
-}
-
-func (h *WebSocketHandler) handleFocus(message []byte) {
-	// Parse the message to get focus state
-	var msg struct {
-		Event    string `json:"event"`
-		Focusing bool   `json:"focusing"`
-	}
-	if err := json.Unmarshal(message, &msg); err != nil {
-		log.Printf("Error parsing focus message: %v", err)
-		return
-	}
-
-	h.setFocusing(msg.Focusing)
-	log.Printf("Focus state updated: %v", h.focusing)
 }
