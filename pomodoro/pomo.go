@@ -1,16 +1,9 @@
 package pomodoro
 
 import (
-	"fmt"
 	"log"
 	"time"
 )
-
-func FormatTime(seconds float64) string {
-	minutes := int(seconds) / 60
-	secs := int(seconds) % 60
-	return fmt.Sprintf("%02d:%02d", minutes, secs)
-}
 
 type ButtonInfo struct {
 	Text   string `json:"text"`
@@ -27,20 +20,21 @@ const (
 )
 
 type Pomo struct {
-	Duration     time.Duration
-	TimeLeft     time.Duration
-	State        PomodoroState
-	StartTime    time.Time
-	timer        *time.Timer
-	ticker       *time.Ticker
-	tickCallback func(string)
+	Duration  time.Duration
+	TimeLeft  time.Duration
+	State     PomodoroState
+	StartTime time.Time
+	timer     *time.Timer
+	ticker    *time.Ticker
+	Callbacks *Callbacks
 }
 
 func NewPomodoro(duration time.Duration) *Pomo {
 	return &Pomo{
-		Duration: duration,
-		TimeLeft: duration,
-		State:    StateIdle,
+		Duration:  duration,
+		TimeLeft:  duration,
+		State:     StateIdle,
+		Callbacks: NewCallbacks(),
 	}
 }
 
@@ -54,6 +48,8 @@ func (p *Pomo) Start() {
 	p.timer = time.NewTimer(p.TimeLeft)
 	p.ticker = time.NewTicker(time.Second)
 
+	p.Callbacks.RunOnStart(p)
+
 	go func() {
 		for {
 			select {
@@ -64,16 +60,11 @@ func (p *Pomo) Start() {
 					p.ticker.Stop()
 					p.ticker = nil
 				}
-				if p.tickCallback != nil {
-					p.tickCallback(FormatTime(0))
-				}
+				p.Callbacks.RunOnFinish(p)
 				return
 			case <-p.ticker.C:
 				p.TimeLeft = p.TimeLeft - time.Second
-				log.Println("tick")
-				if p.tickCallback != nil {
-					p.tickCallback(FormatTime(p.TimeLeft.Seconds()))
-				}
+				p.Callbacks.RunOnTick(p)
 			}
 		}
 	}()
@@ -100,9 +91,8 @@ func (p *Pomo) Stop() {
 
 	p.State = StateIdle
 	p.TimeLeft = p.Duration
-	if p.tickCallback != nil {
-		p.tickCallback(FormatTime(p.Duration.Seconds()))
-	}
+
+	p.Callbacks.RunOnStop(p)
 }
 
 func (p *Pomo) Pause() {
@@ -123,7 +113,6 @@ func (p *Pomo) Pause() {
 		p.ticker = nil
 	}
 
-	// p.TimeLeft = p.TimeLeft - time.Since(p.StartTime)
 	p.State = StatePaused
 }
 
@@ -133,10 +122,6 @@ func (p *Pomo) Resume() {
 	}
 
 	p.Start()
-}
-
-func (p *Pomo) SetTickCallback(callback func(string)) {
-	p.tickCallback = callback
 }
 
 func (p *Pomo) GetButtons() []ButtonInfo {

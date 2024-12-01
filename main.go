@@ -29,7 +29,6 @@ func main() {
 
 		Bind: []interface{}{
 			app,
-			app.websocket,
 		},
 	})
 
