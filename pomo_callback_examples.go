@@ -34,13 +34,13 @@ func TickTimeLeftAstal(p *pomodoro.Pomo) {
 		if minutes == 1 {
 			suffix = "min"
 		}
-		timeLeft = fmt.Sprintf("%d%s", int(minutes), suffix)
+		timeLeft = fmt.Sprintf("%d %s", int(minutes), suffix)
 	} else {
 		suffix := "secs"
 		if seconds == 1 {
 			suffix = "sec"
 		}
-		timeLeft = fmt.Sprintf("%d%s", int(seconds), suffix)
+		timeLeft = fmt.Sprintf("%d %s", int(seconds), suffix)
 	}
 	astal.SendMessage(fmt.Sprintf("{\"pomodoro\": \"%s\"}", timeLeft))
 }
