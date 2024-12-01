@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"math"
 
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 	"yappy3/astal"
@@ -24,11 +25,22 @@ func TickTimeLeftWrapper(ctx context.Context, p *pomodoro.Pomo) func(p *pomodoro
 
 func TickTimeLeftAstal(p *pomodoro.Pomo) {
 	astal := astal.Astal{}
-	// If more than one minute, show rounded to nearest minutes
-	// show seconds otherwise
-	timeLeft := fmt.Sprintf("%d", int(p.TimeLeft.Seconds()/60))
-	if p.TimeLeft.Seconds() < 60 {
-		timeLeft = fmt.Sprintf("%d", int(p.TimeLeft.Seconds()))
+	seconds := p.TimeLeft.Seconds()
+	var timeLeft string
+	
+	if seconds >= 60 {
+		minutes := math.Round(seconds / 60)
+		suffix := "mins"
+		if minutes == 1 {
+			suffix = "min"
+		}
+		timeLeft = fmt.Sprintf("%d%s", int(minutes), suffix)
+	} else {
+		suffix := "secs"
+		if seconds == 1 {
+			suffix = "sec"
+		}
+		timeLeft = fmt.Sprintf("%d%s", int(seconds), suffix)
 	}
 	astal.SendMessage(fmt.Sprintf("{\"pomodoro\": \"%s\"}", timeLeft))
 }
