@@ -1,4 +1,4 @@
-package main
+package coach
 
 import (
 	"encoding/json"
@@ -15,17 +15,9 @@ type WebSocketHandler struct {
 	URL        string
 	conn       *websocket.Conn
 	headers    http.Header
-	focusing   bool
-	OnFocusSet func(bool)
 	done       chan struct{}
 }
 
-func (h *WebSocketHandler) setFocusing(focusing bool) {
-	h.focusing = focusing
-	if h.OnFocusSet != nil {
-		h.OnFocusSet(focusing)
-	}
-}
 
 func NewWebSocketHandler(wsurl string, url string) *WebSocketHandler {
 	return &WebSocketHandler{

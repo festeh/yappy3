@@ -1,4 +1,4 @@
-package main
+package pomodoro
 
 import (
 	"fmt"
@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-func formatTime(seconds float64) string {
+func FormatTime(seconds float64) string {
 	minutes := int(seconds) / 60
 	secs := int(seconds) % 60
 	return fmt.Sprintf("%02d:%02d", minutes, secs)
@@ -26,7 +26,7 @@ const (
 	StateFinished PomodoroState = "finished"
 )
 
-type Pomodoro struct {
+type Pomo struct {
 	Duration     time.Duration
 	TimeLeft     time.Duration
 	State        PomodoroState
@@ -36,15 +36,15 @@ type Pomodoro struct {
 	tickCallback func(string)
 }
 
-func NewPomodoro(duration time.Duration) *Pomodoro {
-	return &Pomodoro{
+func NewPomodoro(duration time.Duration) *Pomo {
+	return &Pomo{
 		Duration: duration,
 		TimeLeft: duration,
 		State:    StateIdle,
 	}
 }
 
-func (p *Pomodoro) Start() {
+func (p *Pomo) Start() {
 	if p.State == StateRunning {
 		return
 	}
@@ -65,21 +65,21 @@ func (p *Pomodoro) Start() {
 					p.ticker = nil
 				}
 				if p.tickCallback != nil {
-					p.tickCallback(formatTime(0))
+					p.tickCallback(FormatTime(0))
 				}
 				return
 			case <-p.ticker.C:
 				p.TimeLeft = p.TimeLeft - time.Second
 				log.Println("tick")
 				if p.tickCallback != nil {
-					p.tickCallback(formatTime(p.TimeLeft.Seconds()))
+					p.tickCallback(FormatTime(p.TimeLeft.Seconds()))
 				}
 			}
 		}
 	}()
 }
 
-func (p *Pomodoro) Stop() {
+func (p *Pomo) Stop() {
 	log.Println("Stopping")
 	if p.State == StateIdle || p.State == StateFinished {
 		return
@@ -101,11 +101,11 @@ func (p *Pomodoro) Stop() {
 	p.State = StateIdle
 	p.TimeLeft = p.Duration
 	if p.tickCallback != nil {
-		p.tickCallback(formatTime(p.Duration.Seconds()))
+		p.tickCallback(FormatTime(p.Duration.Seconds()))
 	}
 }
 
-func (p *Pomodoro) Pause() {
+func (p *Pomo) Pause() {
 	log.Println("Paused")
 	if p.State != StateRunning {
 		return
@@ -127,7 +127,7 @@ func (p *Pomodoro) Pause() {
 	p.State = StatePaused
 }
 
-func (p *Pomodoro) Resume() {
+func (p *Pomo) Resume() {
 	if p.State != StatePaused {
 		return
 	}
@@ -135,11 +135,11 @@ func (p *Pomodoro) Resume() {
 	p.Start()
 }
 
-func (p *Pomodoro) SetTickCallback(callback func(string)) {
+func (p *Pomo) SetTickCallback(callback func(string)) {
 	p.tickCallback = callback
 }
 
-func (p *Pomodoro) GetButtons() []ButtonInfo {
+func (p *Pomo) GetButtons() []ButtonInfo {
 	switch p.State {
 	case StateIdle:
 		return []ButtonInfo{{Text: "Start", Method: "StartPomodoro"}}

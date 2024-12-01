@@ -1,4 +1,4 @@
-export namespace main {
+export namespace pomodoro {
 	
 	export class ButtonInfo {
 	    text: string;
