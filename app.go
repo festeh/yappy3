@@ -51,7 +51,8 @@ func (a *App) startup(ctx context.Context) {
 	cbs := a.pomo.Callbacks
 	cbs.AddTick(TickTimeLeftWrapper(ctx, a.pomo))
 	cbs.AddTick(TickTimeLeftAstal)
-
+	
+	cbs.AddStart(NotifyPomodoroStart)
 	cbs.AddStop(StopResetTimeWrapper(ctx, a.pomo))
 
 	a.coach.SetOnFocusSet(func(focusing bool) {

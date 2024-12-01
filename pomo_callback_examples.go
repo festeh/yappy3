@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"math"
+	"os/exec"
 
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 	"yappy3/astal"
@@ -43,6 +44,11 @@ func TickTimeLeftAstal(p *pomodoro.Pomo) {
 		timeLeft = fmt.Sprintf("%d %s", int(seconds), suffix)
 	}
 	astal.SendMessage(fmt.Sprintf("{\"pomodoro\": \"%s\"}", timeLeft))
+}
+
+func NotifyPomodoroStart(p *pomodoro.Pomo) {
+	cmd := exec.Command("notify-send", "Pomodoro", "Pomodoro has started")
+	cmd.Run()
 }
 
 func StopResetTimeWrapper(ctx context.Context, p *pomodoro.Pomo) func(p *pomodoro.Pomo) {
