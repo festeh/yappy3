@@ -30,6 +30,8 @@ func NewCoach(ws_url string, url string) *Coach {
 			case <-ticker.C:
 				s.TimeSince += time.Minute
 				s.callbacks.RunOnTick(s)
+			case msg := <-s.handler.msgChan:
+				s.handleMessage(msg)
 			case <-s.handler.done:
 				return
 			}
@@ -64,6 +66,26 @@ func (s *Coach) SetFocusing(focusing bool) {
 
 func (s *Coach) SetOnFocusSet(f func(focusing bool)) {
 	s.onFocusSet = f
+}
+
+func (s *Coach) handleMessage(message []byte) {
+	// Parse JSON message
+	var msg struct {
+		Event    string `json:"event"`
+		Focusing bool   `json:"focusing"`
+	}
+	if err := json.Unmarshal(message, &msg); err != nil {
+		log.Printf("Error parsing message: %v", err)
+		return
+	}
+
+	// Handle different event types
+	switch msg.Event {
+	case "focusing":
+		s.SetFocusing(msg.Focusing)
+	default:
+		log.Printf("Unknown event: %s", msg.Event)
+	}
 }
 
 func (s *Coach) handleFocus(message []byte) {

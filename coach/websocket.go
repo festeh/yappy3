@@ -16,6 +16,7 @@ type WebSocketHandler struct {
 	conn    *websocket.Conn
 	headers http.Header
 	done    chan struct{}
+	msgChan chan []byte
 }
 
 func NewWebSocketHandler(wsurl string, url string) *WebSocketHandler {
@@ -24,6 +25,7 @@ func NewWebSocketHandler(wsurl string, url string) *WebSocketHandler {
 		URL:     url,
 		headers: make(http.Header),
 		done:    make(chan struct{}),
+		msgChan: make(chan []byte),
 	}
 }
 
@@ -51,27 +53,10 @@ func (h *WebSocketHandler) Connect() error {
 					return
 				}
 
-				// Parse JSON message
-				var msg struct {
-					Event string `json:"event"`
-				}
-				if err := json.Unmarshal(p, &msg); err != nil {
-					log.Printf("Error parsing message: %v", err)
-					continue
-				}
-
-				// Handle different event types
-				switch msg.Event {
-				case "focusing":
-          // TODO: broken!! fix
-					// h.handleFocus(p)
-				default:
-					log.Printf("Unknown event: %s", msg.Event)
-				}
-
-				// Echo the message back
-				if err := h.conn.WriteMessage(messageType, p); err != nil {
-					log.Printf("Error writing message: %v", err)
+				select {
+				case h.msgChan <- p:
+					// Message sent to channel
+				case <-h.done:
 					return
 				}
 			}
