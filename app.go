@@ -7,8 +7,6 @@ import (
 	"time"
 
 	"github.com/joho/godotenv"
-	"github.com/wailsapp/wails/v2/pkg/runtime"
-
 	"yappy3/coach"
 	"yappy3/pomodoro"
 )
@@ -48,16 +46,16 @@ func NewApp() *App {
 // so we can call the runtime methods
 func (a *App) startup(ctx context.Context) {
 	a.ctx = ctx
-	cbs := a.pomo.Callbacks
-	cbs.AddTick(TickTimeLeftWrapper(ctx, a.pomo))
-	cbs.AddTick(TickTimeLeftAstal)
-	
-	cbs.AddStart(NotifyPomodoroStart)
-	cbs.AddStop(NotifyPomodoroStop)
-	cbs.AddStop(StopResetTimeWrapper(ctx, a.pomo))
-	cbs.AddFinish(NotifyPomodoroFinish)
+	pCbs := a.pomo.Callbacks
+	pCbs.AddTick(TickTimeLeftWrapper(ctx, a.pomo))
+	pCbs.AddTick(TickTimeLeftAstal)
 
-	a.coach.SetOnFocusSet(func(focusing bool) {
-		runtime.EventsEmit(ctx, "focusing", focusing)
-	})
+	pCbs.AddStart(NotifyPomodoroStart)
+	pCbs.AddStop(NotifyPomodoroStop)
+	pCbs.AddStop(StopResetTimeWrapper(ctx, a.pomo))
+	pCbs.AddFinish(NotifyPomodoroFinish)
+
+	cCbs := a.coach.Callbacks
+	cCbs.OnFocusReceived = append(cCbs.OnFocusReceived, EmitOnFocusSetWrapper(ctx, a.coach))
+	cCbs.OnFocusReceived = append(cCbs.OnFocusReceived, OnFocusSetAstal)
 }

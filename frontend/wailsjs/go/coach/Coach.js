@@ -14,14 +14,14 @@ export function Disconnect() {
   return window['go']['coach']['Coach']['Disconnect']();
 }
 
+export function FocusNow() {
+  return window['go']['coach']['Coach']['FocusNow']();
+}
+
 export function GetFocusing() {
   return window['go']['coach']['Coach']['GetFocusing']();
 }
 
 export function SetFocusing(arg1) {
   return window['go']['coach']['Coach']['SetFocusing'](arg1);
-}
-
-export function SetOnFocusSet(arg1) {
-  return window['go']['coach']['Coach']['SetOnFocusSet'](arg1);
 }

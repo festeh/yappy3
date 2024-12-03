@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onDestroy, onMount } from 'svelte';
-	import { Connect, Disconnect, GetFocusing, SetFocusing } from '../wailsjs/go/coach/Coach';
+	import { Connect, Disconnect, GetFocusing, FocusNow } from '../wailsjs/go/coach/Coach';
 	import { EventsOn } from '../wailsjs/runtime';
 
 	let focusing: boolean | null = null;
@@ -12,7 +12,7 @@
 	onMount(async () => {
 		try {
 			await Connect();
-			await GetFocusing();
+			focusing = await GetFocusing();
 		} catch (error) {
 			console.log(error);
 		}
@@ -37,7 +37,7 @@
 			{/if}
 		</div>
 		<button
-			on:click={() => SetFocusing(true)}
+			on:click={() => FocusNow()}
 			class="rounded-lg bg-gray-700 px-6 py-3 text-xl text-gray-300 hover:bg-gray-600"
 		>
 			Focus Now
