@@ -12,6 +12,7 @@ import (
 
 import (
 	"sync"
+	"time"
 )
 
 type WebSocketHandler struct {
@@ -79,6 +80,19 @@ func (h *WebSocketHandler) readPump() {
 		}
 		h.connected = false
 		h.mu.Unlock()
+
+		// Try to reconnect after a delay
+		go func() {
+			select {
+			case <-h.done:
+				return
+			case <-time.After(5 * time.Second):
+				err := h.Connect()
+				if err != nil {
+					log.Printf("Reconnection failed: %v", err)
+				}
+			}
+		}()
 	}()
 
 	for {
@@ -86,6 +100,10 @@ func (h *WebSocketHandler) readPump() {
 		case <-h.done:
 			return
 		default:
+			if !h.connected {
+				return
+			}
+
 			_, p, err := h.conn.ReadMessage()
 			if err != nil {
 				if !websocket.IsCloseError(err, websocket.CloseNormalClosure, websocket.CloseGoingAway) {
@@ -93,6 +111,7 @@ func (h *WebSocketHandler) readPump() {
 				}
 				return
 			}
+
 			select {
 			case h.msgChan <- p:
 			case <-h.done:

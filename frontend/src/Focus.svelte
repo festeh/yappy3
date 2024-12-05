@@ -9,13 +9,18 @@
 		focusing = updated;
 	});
 
-	onMount(async () => {
+	async function tryConnect() {
 		try {
 			await Connect();
 			focusing = await GetFocusing();
 		} catch (error) {
-			console.log(error);
+			console.log("Connection error:", error);
+			setTimeout(tryConnect, 5000); // Retry every 5 seconds
 		}
+	}
+
+	onMount(() => {
+		tryConnect();
 	});
 
 	onDestroy(() => {
