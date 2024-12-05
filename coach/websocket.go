@@ -10,13 +10,19 @@ import (
 	"github.com/gorilla/websocket"
 )
 
+import (
+	"sync"
+)
+
 type WebSocketHandler struct {
-	WS_URL  string
-	URL     string
-	conn    *websocket.Conn
-	headers http.Header
-	done    chan struct{}
-	msgChan chan []byte
+	WS_URL    string
+	URL       string
+	conn      *websocket.Conn
+	headers   http.Header
+	done      chan struct{}
+	msgChan   chan []byte
+	mu        sync.Mutex
+	connected bool
 }
 
 func NewWebSocketHandler(wsurl string, url string) *WebSocketHandler {
@@ -30,9 +36,18 @@ func NewWebSocketHandler(wsurl string, url string) *WebSocketHandler {
 }
 
 func (h *WebSocketHandler) Connect() error {
+	h.mu.Lock()
+	if h.connected {
+		h.mu.Unlock()
+		return nil
+	}
+	
+	h.done = make(chan struct{})
+	h.msgChan = make(chan []byte)
+	
 	dialer := websocket.Dialer{}
 	var err error
-
+	
 	h.conn, _, err = dialer.Dial(h.WS_URL, h.headers)
 	if err != nil {
 		log.Println("ws_url", h.WS_URL)
@@ -61,6 +76,8 @@ func (h *WebSocketHandler) Connect() error {
 		}
 	}()
 
+	h.connected = true
+	h.mu.Unlock()
 	return nil
 }
 
@@ -82,10 +99,18 @@ func (h *WebSocketHandler) GetFocus() (bool, error) {
 }
 
 func (h *WebSocketHandler) Disconnect() {
+	h.mu.Lock()
+	defer h.mu.Unlock()
+	
+	if !h.connected {
+		return
+	}
+	
+	close(h.done)
 	if h.conn != nil {
-		close(h.done)
 		h.conn.Close()
 	}
+	h.connected = false
 }
 
 func (h *WebSocketHandler) FocusNow() error {
