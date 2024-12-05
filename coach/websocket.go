@@ -41,10 +41,25 @@ func (h *WebSocketHandler) Connect() error {
 		h.mu.Unlock()
 		return nil
 	}
-	
+
 	h.done = make(chan struct{})
 	h.msgChan = make(chan []byte)
 	
+	var err error
+	err = h.connectWebSocket()
+	if err != nil {
+		h.mu.Unlock()
+		return fmt.Errorf("failed to connect to websocket: %v", err)
+	}
+
+	go h.readPump()
+
+	h.connected = true
+	h.mu.Unlock()
+	return nil
+}
+
+func (h *WebSocketHandler) connectWebSocket() error {
 	dialer := websocket.Dialer{}
 	var err error
 	
@@ -53,32 +68,38 @@ func (h *WebSocketHandler) Connect() error {
 		log.Println("ws_url", h.WS_URL)
 		return fmt.Errorf("failed to connect to websocket: %v", err)
 	}
+	return nil
+}
 
-	go func() {
-		defer h.conn.Close()
-
-		for {
-			select {
-			case <-h.done:
-				return
-			default:
-				_, p, err := h.conn.ReadMessage()
-				if err != nil {
-					log.Printf("Error reading message: %v", err)
-					return
-				}
-				select {
-				case h.msgChan <- p:
-				case <-h.done:
-					return
-				}
-			}
+func (h *WebSocketHandler) readPump() {
+	defer func() {
+		h.mu.Lock()
+		if h.conn != nil {
+			h.conn.Close()
 		}
+		h.connected = false
+		h.mu.Unlock()
 	}()
 
-	h.connected = true
-	h.mu.Unlock()
-	return nil
+	for {
+		select {
+		case <-h.done:
+			return
+		default:
+			_, p, err := h.conn.ReadMessage()
+			if err != nil {
+				if !websocket.IsCloseError(err, websocket.CloseNormalClosure, websocket.CloseGoingAway) {
+					log.Printf("Error reading message: %v", err)
+				}
+				return
+			}
+			select {
+			case h.msgChan <- p:
+			case <-h.done:
+				return
+			}
+		}
+	}
 }
 
 func (h *WebSocketHandler) GetFocus() (bool, error) {
