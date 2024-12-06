@@ -6,6 +6,7 @@
 	let focusing: boolean | null = null;
 
 	EventsOn('focusing', async (updated: boolean) => {
+    console.log("Got focusing", updated)
 		focusing = updated;
 	});
 
@@ -24,11 +25,11 @@
 	});
 
 	onDestroy(() => {
-		try {
-			Disconnect();
-		} catch (error) {
-			console.log(error);
-		}
+		// try {
+		// 	Disconnect();
+		// } catch (error) {
+		// 	console.log(error);
+		// }
 	});
 </script>
 

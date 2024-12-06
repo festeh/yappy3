@@ -2,7 +2,7 @@ package coach
 
 import (
 	"encoding/json"
-	"log"
+  "github.com/charmbracelet/log"
 	"time"
 )
 
@@ -28,11 +28,14 @@ func NewCoach(ws_url string, url string) *Coach {
 		for {
 			select {
 			case <-ticker.C:
+        log.Info("Tick")
 				s.TimeSince += time.Minute
 				s.Callbacks.RunOnTick(s)
 			case msg := <-s.handler.msgChan:
+        log.Info("Got message")
 				s.handleMessage(msg)
 			case <-s.handler.done:
+        log.Info("We're done")
 				return
 			}
 		}
@@ -52,7 +55,7 @@ func (s *Coach) Disconnect() {
 func (s *Coach) GetFocusing() bool {
 	res, err := s.handler.GetFocus()
 	if err != nil {
-		log.Printf("Error getting focus: %v", err)
+		log.Error("Error getting focus", "err", err)
 		return false
 	}
 	return res
@@ -63,13 +66,14 @@ func (s *Coach) Close() {
 }
 
 func (s *Coach) SetFocusing(focusing bool) {
-	log.Printf("Focus state updated: %v", focusing)
+	log.Info("SetFocusing()", "focusing", focusing)
 	s.Focusing = focusing
 	s.TimeSince = 0
 	s.Callbacks.RunOnFocusReceived(s)
 }
 
 func (s *Coach) handleMessage(message []byte) {
+  log.Info("Handling message", "message", string(message))
 	// Parse JSON message
 	var msg struct {
 		Event    string `json:"event"`
