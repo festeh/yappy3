@@ -25,5 +25,8 @@
     "onlyBuiltDependencies": [
       "svelte-preprocess"
     ]
+  },
+  "dependencies": {
+    "@tailwindcss/vite": "^4.0.9"
   }
 }
