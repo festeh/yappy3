@@ -1,6 +1,7 @@
 <script lang="ts">
 	import Focus from './Focus.svelte';
 	import Pomodoro from './Pomodoro.svelte';
+	import Settings from './Settings.svelte';
 
 	let currentView = 'pomodoro';
 </script>
@@ -22,6 +23,13 @@
 		>
 			🎯
 		</button>
+		<button
+			class="flex items-center justify-center rounded-lg p-2 text-2xl transition-colors"
+			on:click={() => (currentView = 'settings')}
+			title="Settings"
+		>
+			⚙️
+		</button>
 	</div>
 
 	<!-- Main Content -->
@@ -30,6 +38,8 @@
 			<Pomodoro />
 		{:else if currentView === 'focus'}
 			<Focus />
+		{:else if currentView === 'settings'}
+			<Settings />
 		{/if}
 	</main>
 </div>
