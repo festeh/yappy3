@@ -2,6 +2,7 @@
   import Focus from "./Focus.svelte";
   import Pomodoro from "./Pomodoro.svelte";
   import Settings from "./Settings.svelte";
+  import Debug from "./Debug.svelte";
   import NavButton from "./components/NavButton.svelte";
 
   let currentView = "pomodoro";
@@ -31,6 +32,13 @@
       {currentView}
       onClick={() => (currentView = "settings")}
     />
+    <NavButton
+      icon="mdi:bug-outline"
+      title="Debug"
+      view="debug"
+      {currentView}
+      onClick={() => (currentView = "debug")}
+    />
   </div>
 
   <!-- Main Content -->
@@ -41,6 +49,8 @@
       <Focus />
     {:else if currentView === "settings"}
       <Settings />
+    {:else if currentView === "debug"}
+      <Debug />
     {/if}
   </main>
 </div>
