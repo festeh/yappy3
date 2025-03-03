@@ -2,6 +2,7 @@
   import Focus from "./Focus.svelte";
   import Pomodoro from "./Pomodoro.svelte";
   import Settings from "./Settings.svelte";
+  import NavButton from "./components/NavButton.svelte";
 
   let currentView = "pomodoro";
 </script>
@@ -9,36 +10,27 @@
 <div class="flex h-screen w-full">
   <!-- Side Navigation -->
   <div class="flex w-12 flex-col gap-2 border-r border-gray-200 py-4">
-    <button
-      class="flex items-center justify-center rounded-lg text-2xl transition-colors {currentView ===
-      'pomodoro'
-        ? 'bg-blue-100 text-blue-600'
-        : 'hover:bg-gray-100'}"
-      on:click={() => (currentView = "pomodoro")}
+    <NavButton
+      icon="⏰"
       title="Pomodoro Timer"
-    >
-      ⏰
-    </button>
-    <button
-      class="flex items-center justify-center rounded-lg text-2xl transition-colors {currentView ===
-      'focus'
-        ? 'bg-blue-100 text-blue-600'
-        : 'hover:bg-gray-100'}"
-      on:click={() => (currentView = "focus")}
+      view="pomodoro"
+      {currentView}
+      onClick={() => (currentView = "pomodoro")}
+    />
+    <NavButton
+      icon="🎯"
       title="Focus Mode"
-    >
-      🎯
-    </button>
-    <button
-      class="flex items-center justify-center rounded-lg text-2xl transition-colors {currentView ===
-      'settings'
-        ? 'bg-blue-100 text-blue-600'
-        : 'hover:bg-gray-100'}"
-      on:click={() => (currentView = "settings")}
+      view="focus"
+      {currentView}
+      onClick={() => (currentView = "focus")}
+    />
+    <NavButton
+      icon="⚙️"
       title="Settings"
-    >
-      ⚙️
-    </button>
+      view="settings"
+      {currentView}
+      onClick={() => (currentView = "settings")}
+    />
   </div>
 
   <!-- Main Content -->
