@@ -2,7 +2,7 @@ package app
 
 import (
 	"context"
-	"embed"
+	_ "embed" // Using blank identifier to avoid "unused import" error
 	"log"
 	"os"
 	"time"
