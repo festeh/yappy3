@@ -1,4 +1,4 @@
-package main
+package pomodoro
 
 import (
 	"context"
@@ -8,7 +8,6 @@ import (
 
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 	"yappy3/astal"
-	"yappy3/pomodoro"
 )
 
 func FormatTime(seconds float64) string {
@@ -17,14 +16,14 @@ func FormatTime(seconds float64) string {
 	return fmt.Sprintf("%02d:%02d", minutes, secs)
 }
 
-func TickTimeLeftWrapper(ctx context.Context, p *pomodoro.Pomo) func(p *pomodoro.Pomo) {
-	return func(p *pomodoro.Pomo) {
+func TickTimeLeftWrapper(ctx context.Context, p *Pomo) func(p *Pomo) {
+	return func(p *Pomo) {
 		timeLeft := FormatTime(p.TimeLeft.Seconds())
 		runtime.EventsEmit(ctx, "tick", timeLeft)
 	}
 }
 
-func TickTimeLeftAstal(p *pomodoro.Pomo) {
+func TickTimeLeftAstal(p *Pomo) {
 	astal := astal.Astal{}
 	seconds := p.TimeLeft.Seconds()
 	var timeLeft string
@@ -46,23 +45,23 @@ func TickTimeLeftAstal(p *pomodoro.Pomo) {
 	astal.SendMessage(fmt.Sprintf("{\"pomodoro\": \"%s\"}", timeLeft))
 }
 
-func NotifyPomodoroStart(p *pomodoro.Pomo) {
+func NotifyPomodoroStart(p *Pomo) {
 	cmd := exec.Command("notify-send", "Pomodoro", "Pomodoro has started")
 	cmd.Run()
 }
 
-func NotifyPomodoroStop(p *pomodoro.Pomo) {
+func NotifyPomodoroStop(p *Pomo) {
 	cmd := exec.Command("notify-send", "Pomodoro", "Pomodoro has been stopped")
 	cmd.Run()
 }
 
-func NotifyPomodoroFinish(p *pomodoro.Pomo) {
+func NotifyPomodoroFinish(p *Pomo) {
 	cmd := exec.Command("notify-send", "Pomodoro", "Pomodoro finished! Hooray!")
 	cmd.Run()
 }
 
-func StopResetTimeWrapper(ctx context.Context, p *pomodoro.Pomo) func(p *pomodoro.Pomo) {
-	return func(p *pomodoro.Pomo) {
+func StopResetTimeWrapper(ctx context.Context, p *Pomo) func(p *Pomo) {
+	return func(p *Pomo) {
 		duration := FormatTime(p.Duration.Seconds())
 		runtime.EventsEmit(ctx, "tick", duration)
 	}

@@ -47,15 +47,15 @@ func NewApp() *App {
 func (a *App) startup(ctx context.Context) {
 	a.ctx = ctx
 	pCbs := a.pomo.Callbacks
-	pCbs.AddTick(TickTimeLeftWrapper(ctx, a.pomo))
-	pCbs.AddTick(TickTimeLeftAstal)
+	pCbs.AddTick(pomodoro.TickTimeLeftWrapper(ctx, a.pomo))
+	pCbs.AddTick(pomodoro.TickTimeLeftAstal)
 
-	pCbs.AddStart(NotifyPomodoroStart)
-	pCbs.AddStop(NotifyPomodoroStop)
-	pCbs.AddStop(StopResetTimeWrapper(ctx, a.pomo))
-	pCbs.AddFinish(NotifyPomodoroFinish)
+	pCbs.AddStart(pomodoro.NotifyPomodoroStart)
+	pCbs.AddStop(pomodoro.NotifyPomodoroStop)
+	pCbs.AddStop(pomodoro.StopResetTimeWrapper(ctx, a.pomo))
+	pCbs.AddFinish(pomodoro.NotifyPomodoroFinish)
 
 	cCbs := a.coach.Callbacks
-	cCbs.OnFocusReceived = append(cCbs.OnFocusReceived, EmitOnFocusSetWrapper(ctx, a.coach))
-	cCbs.OnFocusReceived = append(cCbs.OnFocusReceived, OnFocusSetAstal)
+	cCbs.OnFocusReceived = append(cCbs.OnFocusReceived, coach.EmitOnFocusSetWrapper(ctx, a.coach))
+	cCbs.OnFocusReceived = append(cCbs.OnFocusReceived, coach.OnFocusSetAstal)
 }

@@ -32,7 +32,7 @@ func (a *App) GetPomodoroState() pomodoro.PomodoroState {
 
 // GetTimeLeft returns the remaining time in MM:SS format
 func (a *App) GetTimeLeft() string {
-	return FormatTime(a.pomo.TimeLeft.Seconds())
+	return pomodoro.FormatTime(a.pomo.TimeLeft.Seconds())
 }
 
 // SetPomodoroTime sets a new duration for the pomodoro timer (in minutes)
