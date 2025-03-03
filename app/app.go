@@ -13,7 +13,7 @@ import (
 	"yappy3/pomodoro"
 )
 
-//go:embed ../build/tomato.png
+//go:embed tomato.png
 var iconData []byte
 
 func onReady() {
