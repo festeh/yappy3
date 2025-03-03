@@ -3,6 +3,7 @@
   import Pomodoro from "./Pomodoro.svelte";
   import Settings from "./Settings.svelte";
   import Debug from "./Debug.svelte";
+  import Stats from "./Stats.svelte";
   import NavButton from "./components/NavButton.svelte";
 
   let currentView = "pomodoro";
@@ -17,6 +18,13 @@
       view="pomodoro"
       {currentView}
       onClick={() => (currentView = "pomodoro")}
+    />
+    <NavButton
+      icon="mdi:chart-line"
+      title="Statistics"
+      view="stats"
+      {currentView}
+      onClick={() => (currentView = "stats")}
     />
     <NavButton
       icon="mdi:target"
@@ -45,6 +53,8 @@
   <main class="flex-1">
     {#if currentView === "pomodoro"}
       <Pomodoro />
+    {:else if currentView === "stats"}
+      <Stats />
     {:else if currentView === "focus"}
       <Focus />
     {:else if currentView === "settings"}
