@@ -2,6 +2,7 @@ package app
 
 import (
 	"context"
+	"embed"
 	"log"
 	"os"
 	"time"
@@ -12,11 +13,14 @@ import (
 	"yappy3/pomodoro"
 )
 
+//go:embed ../build/tomato.png
+var iconData []byte
+
 func onReady() {
 	systray.SetTitle("yappy3")
 	systray.SetTooltip("yappy3")
 	systray.AddMenuItem("Quit", "Quit the whole app")
-	systray.SetIcon(icon)
+	systray.SetIcon(iconData)
 }
 
 func onExit() {
