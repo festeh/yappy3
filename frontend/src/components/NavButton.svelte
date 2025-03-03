@@ -11,7 +11,7 @@
 <button
   class="flex items-center justify-center rounded-lg p-1 text-center transition-colors {currentView === view
     ? 'bg-blue-100 text-blue-600'
-    : 'hover:bg-gray-100'}"
+    : 'hover:bg-gray-600'}"
   on:click={onClick}
   {title}
 >
