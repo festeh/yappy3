@@ -11,21 +11,21 @@
   <!-- Side Navigation -->
   <div class="flex w-12 flex-col gap-2 border-r border-gray-200 py-4">
     <NavButton
-      icon="⏰"
+      icon="mdi:timer-outline"
       title="Pomodoro Timer"
       view="pomodoro"
       {currentView}
       onClick={() => (currentView = "pomodoro")}
     />
     <NavButton
-      icon="🎯"
+      icon="mdi:target"
       title="Focus Mode"
       view="focus"
       {currentView}
       onClick={() => (currentView = "focus")}
     />
     <NavButton
-      icon="⚙️"
+      icon="mdi:cog-outline"
       title="Settings"
       view="settings"
       {currentView}
