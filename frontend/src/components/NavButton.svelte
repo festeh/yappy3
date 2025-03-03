@@ -15,5 +15,5 @@
   on:click={onClick}
   {title}
 >
-  <Icon icon={icon} width="24" height="24" />
+  <Icon icon={icon} width="48" height="48" />
 </button>
