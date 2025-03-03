@@ -33,7 +33,7 @@
       onClick={() => (currentView = "settings")}
     />
     <NavButton
-      icon="mdi:code-braces"
+      icon="mdi:console"
       title="Debug"
       view="debug"
       {currentView}
