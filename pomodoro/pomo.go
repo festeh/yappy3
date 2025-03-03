@@ -124,22 +124,29 @@ func (p *Pomo) Resume() {
 	p.Start()
 }
 
+// GetTimeLeft returns the remaining time in MM:SS format
+func (p *Pomo) GetTimeLeft() string {
+  return FormatTime(p.TimeLeft.Seconds())
+}
+
+
+
 func (p *Pomo) GetButtons() []ButtonInfo {
 	switch p.State {
 	case StateIdle:
-		return []ButtonInfo{{Text: "Start", Method: "StartPomodoro"}}
+		return []ButtonInfo{{Text: "Start", Method: "start"}}
 	case StateRunning:
 		return []ButtonInfo{
-			{Text: "Pause", Method: "PausePomodoro"},
-			{Text: "Stop", Method: "StopPomodoro"},
+			{Text: "Pause", Method: "pause"},
+			{Text: "Stop", Method: "stop"},
 		}
 	case StatePaused:
 		return []ButtonInfo{
-			{Text: "Resume", Method: "ResumePomodoro"},
-			{Text: "Stop", Method: "StopPomodoro"},
+			{Text: "Resume", Method: "resume"},
+			{Text: "Stop", Method: "stop"},
 		}
 	case StateFinished:
-		return []ButtonInfo{{Text: "Start New", Method: "StartPomodoro"}}
+		return []ButtonInfo{{Text: "Start New", Method: "start"}}
 	default:
 		return []ButtonInfo{}
 	}

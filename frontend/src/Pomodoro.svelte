@@ -1,13 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import {
-		GetTimeLeft,
-		StartPomodoro,
-		StopPomodoro,
-		PausePomodoro,
-		ResumePomodoro,
-		GetPomodoroButtons
-	} from '../wailsjs/go/main/App';
+	import * as Pomo from '../wailsjs/go/pomodoro/Pomo';
 	import { EventsOn } from '../wailsjs/runtime/runtime';
 	import Button from './Button.svelte';
 
@@ -15,11 +8,11 @@
 	let buttons: Array<{ text: string; method: string }> = [];
 
 	const updateButtons = async () => {
-		buttons = await GetPomodoroButtons();
+		buttons = await Pomo.GetButtons();
 	};
 
 	onMount(async () => {
-		remaining = await GetTimeLeft();
+		remaining = await Pomo.GetTimeLeft();
 		await updateButtons();
 	});
 
@@ -29,10 +22,10 @@
 	});
 
 	const methodMap = {
-		StartPomodoro,
-		StopPomodoro,
-		PausePomodoro,
-		ResumePomodoro
+		"start": Pomo.Start,
+		"stop": Pomo.Stop,
+		"pause": Pomo.Pause,
+    "resume": Pomo.Resume
 	};
 
 	async function handleClick(method: string) {
