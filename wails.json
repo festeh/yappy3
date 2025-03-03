@@ -7,7 +7,7 @@
   "frontend:dev:watcher": "npm run dev",
   "frontend:dev:serverUrl": "auto",
   "author": {
-    "name": "Dima Lipin",
+    "name": "Dmitrii Lipin",
     "email": "dimich3d@ya.ru"
   }
 }
